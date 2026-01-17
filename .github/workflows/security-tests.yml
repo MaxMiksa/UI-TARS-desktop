@@ -25,10 +25,10 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Test preset URL validation
-        run: pnpm -C apps/ui-tars exec vitest run src/main/store/preset-url-validation.test.ts
+        run: pnpm -C apps/ui-tars exec vitest run --dir src/main/store --exclude "**/types.test.ts"
 
       - name: Test overlay sanitization
-        run: pnpm -C apps/ui-tars exec vitest run src/main/shared/setOfMarks.test.ts
+        run: pnpm -C apps/ui-tars exec vitest run --dir src/main/shared
 
       - name: Test share path traversal (agent-server)
         run: pnpm -C multimodal/tarko/agent-server exec vitest run tests/share-path-traversal.test.ts
