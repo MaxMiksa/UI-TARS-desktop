@@ -117,7 +117,8 @@ export class SettingStore {
       const normalized = normalizedIp.toLowerCase();
       if (normalized === '::1' || normalized === '::') return true;
       if (normalized.startsWith('fe80:')) return true;
-      if (normalized.startsWith('fc') || normalized.startsWith('fd')) return true;
+      if (normalized.startsWith('fc') || normalized.startsWith('fd'))
+        return true;
       if (normalized.startsWith('::ffff:')) {
         const mapped = normalized.replace('::ffff:', '');
         return SettingStore.isPrivateOrLocalIp(mapped);
@@ -144,7 +145,12 @@ export class SettingStore {
     }
 
     try {
-      const normalizedHost = parsed.hostname.split('%')[0];
+      const rawHost = parsed.hostname;
+      const bracketlessHost =
+        rawHost.startsWith('[') && rawHost.endsWith(']')
+          ? rawHost.slice(1, -1)
+          : rawHost;
+      const normalizedHost = bracketlessHost.split('%')[0];
       const ipVersion = net.isIP(normalizedHost);
       const addresses = ipVersion
         ? [{ address: normalizedHost }]
