@@ -1,0 +1,38 @@
+name: Security Tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  security-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: '9.10.0'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Test preset URL validation
+        run: pnpm -C apps/ui-tars test -- --run src/main/store/preset-url-validation.test.ts
+
+      - name: Test overlay sanitization
+        run: pnpm -C apps/ui-tars test -- --run src/main/shared/setOfMarks.test.ts
+
+      - name: Test share path traversal (agent-server)
+        run: pnpm -C multimodal/tarko/agent-server test -- --run tests/share-path-traversal.test.ts
+
+      - name: Test share path traversal (agent-server-next)
+        run: pnpm -C multimodal/tarko/agent-server-next test -- --run tests/share-path-traversal.test.ts
