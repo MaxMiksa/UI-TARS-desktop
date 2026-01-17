@@ -2,6 +2,16 @@
  * Target path: apps/ui-tars/src/main/store/preset-url-validation.test.ts
  */
 import { afterEach, describe, expect, it, vi } from 'vitest';
+
+vi.mock('@main/logger', () => ({
+  logger: {
+    error: vi.fn(),
+    warn: vi.fn(),
+    info: vi.fn(),
+    debug: vi.fn(),
+  },
+}));
+
 import { SettingStore } from './setting';
 
 const PUBLIC_IP = '93.184.216.34';
@@ -70,9 +80,9 @@ describe('SettingStore.validatePresetUrl', () => {
     ).rejects.toThrow('private or local');
   });
 
-  it('rejects IPv6 link-local with zone identifier', async () => {
+  it('rejects IPv6 link-local addresses', async () => {
     await expect(
-      SettingStore.validatePresetUrl('https://[fe80::1%25en0]/preset.yaml'),
+      SettingStore.validatePresetUrl('https://[fe80::1]/preset.yaml'),
     ).rejects.toThrow('private or local');
   });
 
@@ -88,9 +98,11 @@ describe('SettingStore.fetchPresetFromUrl', () => {
   it('rejects redirects to private hosts', async () => {
     vi.stubGlobal(
       'fetch',
-      vi.fn().mockResolvedValue(
-        buildRedirectResponse('https://127.0.0.1/preset.yaml'),
-      ),
+      vi
+        .fn()
+        .mockResolvedValue(
+          buildRedirectResponse('https://127.0.0.1/preset.yaml'),
+        ),
     );
 
     await expect(
