@@ -144,10 +144,11 @@ export class SettingStore {
     }
 
     try {
-      const ipVersion = net.isIP(parsed.hostname);
+      const normalizedHost = parsed.hostname.split('%')[0];
+      const ipVersion = net.isIP(normalizedHost);
       const addresses = ipVersion
-        ? [{ address: parsed.hostname }]
-        : await dns.lookup(parsed.hostname, { all: true });
+        ? [{ address: normalizedHost }]
+        : await dns.lookup(normalizedHost, { all: true });
 
       if (!addresses.length) {
         throw new Error('Preset URL host cannot be resolved');
