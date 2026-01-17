@@ -15,6 +15,7 @@ export default defineProject({
   test: {
     globals: true,
     environment: 'node',
+    include: ['**/*.{test,spec}.?(c|m)[jt]s?(x)'],
     includeSource: [resolve(__dirname, '.')],
   },
 
